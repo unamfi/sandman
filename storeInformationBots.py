@@ -4,15 +4,24 @@ import time
 from time import gmtime, strftime
 import datetime
 import pickle
+import twitter
 
 #screen_name="Mujeres__Fem"
 #screen_name="MujeresFemBot"
 botKeyInfo={}
+
+ #Consumer Key (API Key) gQBMwz0Wr7N7W1ktrH69qWgqs
+#Consumer Secret (API Secret) n06iH76oWL53jq26e4BZFjmArLUv5NCS7BaMANXsFmWZ7UMqU1 
+# Access Token 3754491014-p9V41yXNgZ3fwdzlkhPqJzhjmRemcYJzzCYsyMT
+#Access Token Secret PorWL4M8x2KvzooBu2TG7CPNOeT4L7aDoh8xFdY5zvoAu 
+
+
+
 botKeyInfo["Mujeres__Fem"]={}
-botKeyInfo["Mujeres__Fem"]["C_KEY"]="VQmFOYXWmEbhbzOE8cpeTg8Rr"
-botKeyInfo["Mujeres__Fem"]["C_SECRET"]="VQmFOYXWmEbhbzOE8cpeTg8Rr"
-botKeyInfo["Mujeres__Fem"]["A_TOKEN"]="VQmFOYXWmEbhbzOE8cpeTg8Rr"
-botKeyInfo["Mujeres__Fem"]["A_TOKEN_SECRET"]="VQmFOYXWmEbhbzOE8cpeTg8Rr"
+botKeyInfo["Mujeres__Fem"]["C_KEY"]="gQBMwz0Wr7N7W1ktrH69qWgqs"
+botKeyInfo["Mujeres__Fem"]["C_SECRET"]="n06iH76oWL53jq26e4BZFjmArLUv5NCS7BaMANXsFmWZ7UMqU1"
+botKeyInfo["Mujeres__Fem"]["A_TOKEN"]="3754491014-p9V41yXNgZ3fwdzlkhPqJzhjmRemcYJzzCYsyMT"
+botKeyInfo["Mujeres__Fem"]["A_TOKEN_SECRET"]="PorWL4M8x2KvzooBu2TG7CPNOeT4L7aDoh8xFdY5zvoAu"
 
 
 #C_KEY = "T48gHlgfSgEFuOS76N2gy7bj9"  
@@ -148,7 +157,7 @@ def get_all_tweets2(screen_name,api):
 
     #pickle.dump(alltweets, open("alltweets_"+str(screen_name)+".p", "wb"))
     #screen_name,api
-    r#eturn  alltweets
+    #eturn  alltweets
 
 def get_all_tweets(screen_name,api):
     #directorio="timelinePoliticos/"
@@ -206,9 +215,38 @@ def get_all_tweets(screen_name,api):
     return  alltweets
 
 
+def getTweetsMentioningPerson(screen_name):
+	api,auth=authenticateBot(screen_name)
+	#api = tweepy.API(auth)
+	t=-1
+	for tweet in tweepy.Cursor(api.search,q="Mujeres__Fem",since='2015-09-01',until='2015-10-09').items():
+		t+=1
+		if t<5:
+			print tweet.text
+		else:
+			break
+	#if sizeFirst<1:
+    #	print "No tweets could be extracted"
 
+	#else:
+    #	id_list = []
+    #	for i in range(sizeFirst):
+     #   	Id = tweets["statuses"][i]["id"]
+      #  	id_list.append(Id)
+    	#our_since_id = sorted(id_list)[sizeFirst-1]
 
+    	#while 1:
+         #   	tweets = t.search.tweets(q=keyword,count = our_count, since_id = our_since_id)
+          #  	size =  len(tweets["statuses"])
+           # 	if size<1:
+            #    	break
+            #	id_list = []
+            #	for i in range(size):
+             #   	Id = tweets["statuses"][i]["id"]
+              #  	id_list.append(Id)
 
+            	#our_since_id = sorted(id_list)[size-1]
+	
 
 
 
@@ -247,6 +285,8 @@ def  getPeopleWhoMentioned(screen_name):
 	pickle.dump(peopleWhoReplied, open("peopleWhoMentioned_"+str(screen_name)+".p", "wb"))
 	pickle.dump(peopleWhoRepliedIDs, open("peopleWhoMentionedIDs_"+str(screen_name)+".p", "wb"))
 	pickle.dump(peopleWhoRepliedText, open("peopleWhoMentionedText_"+str(screen_name)+".p", "wb"))
+	for m in peopleWhoRepliedText:
+		print m
 	#pickle.dump(peopleWhoReplied, open("peopleWhoReplied_"+str(screen_name)+"_"+str(date)+".p", "wb"))
 	#pickle.dump(peopleWhoRepliedIDs, open("peopleWhoRepliedIDs_"+str(screen_name)+"_"+str(date)+".p", "wb"))
 	#pickle.dump(peopleWhoRepliedText, open("peopleWhoRepliedText_"+str(screen_name)+"_"+str(date)+".p", "wb"))
@@ -452,15 +492,20 @@ def getRepliesBot(screen_name):
 def getAllRepliesFinal(screen_name):
 	#screen_name="MujeresFemBot"
 	getPeopleWhoMentioned(screen_name)
-	api,auth=authenticateBot(screen_name)
-	get_all_tweets(screen_name,api)
-	getRepliesBot(screen_name)
-	getStatsPeopleWhoReply(screen_name)
+	#api,auth=authenticateBot(screen_name)
+	#get_all_tweets(screen_name,api)
+	#getRepliesBot(screen_name)
+	#getStatsPeopleWhoReply(screen_name)
 
 
 #screen_name="MujeresFemBot"
 screen_name="Mujeres__Fem"
-getAllRepliesFinal(screen_name)
+
+#getTweetsMentioningPerson()
+getTweetsMentioningPerson(screen_name)
+#getTweetsMentioningPerson(screen_name,1)
+
+#getAllRepliesFinal(screen_name)
 
 #getMentionsStored(screen_name)
 #getPeopleWhoReply(screen_name)
