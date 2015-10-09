@@ -449,19 +449,31 @@ def getRepliesBot(screen_name):
 
 	
 	pickle.dump(peopleWhoReplied, open("peopleWhoRepliedTweets_"+str(screen_name)+".p", "wb"))
+def getAllRepliesFinal(screen_name):
+	#screen_name="MujeresFemBot"
+	getPeopleWhoMentioned(screen_name)
+	api,auth=authenticateBot(screen_name)
+	get_all_tweets(screen_name,api)
+	getRepliesBot(screen_name)
+	getStatsPeopleWhoReply(screen_name)
+
 
 #screen_name="MujeresFemBot"
+screen_name="Mujeres__Fem"
+getAllRepliesFinal(screen_name)
+
 #getMentionsStored(screen_name)
 #getPeopleWhoReply(screen_name)
 #api,auth=authenticateBot()
 #get_all_tweets(screen_name,api)
 
 #screen_name="Mujeres__Fem"
-screen_name="MujeresFemBot"
-getStatsPeopleWhoReply(screen_name)
 
-screen_name="Mujeres__Fem"
-getStatsPeopleWhoReply(screen_name)
+#screen_name="MujeresFemBot"
+#getStatsPeopleWhoReply(screen_name)
+
+#screen_name="Mujeres__Fem"
+#getStatsPeopleWhoReply(screen_name)
 
 
 
