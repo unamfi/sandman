@@ -219,12 +219,17 @@ def getTweetsMentioningPerson(screen_name):
 	api,auth=authenticateBot(screen_name)
 	#api = tweepy.API(auth)
 	t=-1
-	for tweet in tweepy.Cursor(api.search,q="Mujeres__Fem",since='2015-09-01',until='2015-10-09').items():
-		t+=1
-		if t<5:
-			print tweet.text
-		else:
-			break
+	max_tweets = 1
+	searched_tweets = [status for status in tweepy.Cursor(api.search, q="Mujeres__Fem").items(max_tweets)]
+	for t in searched_tweets:
+		print t.text
+
+	#for tweet in tweepy.Cursor(api.search,q="Mujeres__Fem",since='2015-09-01',until='2015-10-09').items():
+	#	t+=1
+	#	if t<5:
+	#		print tweet.text
+	#	else:
+	#		break
 	#if sizeFirst<1:
     #	print "No tweets could be extracted"
 
