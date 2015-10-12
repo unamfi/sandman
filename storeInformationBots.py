@@ -5,6 +5,7 @@ from time import gmtime, strftime
 import datetime
 import pickle
 import twitter
+import os
 
 #screen_name="Mujeres__Fem"
 #screen_name="MujeresFemBot"
@@ -30,12 +31,15 @@ botKeyInfo["Mujeres__Fem"]["A_TOKEN_SECRET"]="PorWL4M8x2KvzooBu2TG7CPNOeT4L7aDoh
 #A_TOKEN_SECRET = "sI9YoXx6zqOdlOFgyhPTVKZ7hgqAPGwNza1FKAdyJL1pt" 
 
 botKeyInfo["MujeresFemBot"]={}
-botKeyInfo["MujeresFemBot"]["C_KEY"]="T48gHlgfSgEFuOS76N2gy7bj9"
-botKeyInfo["MujeresFemBot"]["C_SECRET"]="7ntJ1xPdSxTjR2bvKVMO0flCvn0xM9AHrhg0DzY77iGnbB6Rzw"
-botKeyInfo["MujeresFemBot"]["A_TOKEN"]="3754637839-BcqriLQ0xS9EJzqzkz5KKZg94lsGmY8kqS2S6Rb"
-botKeyInfo["MujeresFemBot"]["A_TOKEN_SECRET"]="sI9YoXx6zqOdlOFgyhPTVKZ7hgqAPGwNza1FKAdyJL1pt"
+botKeyInfo["MujeresFemBot"]["C_KEY"]="U9BfrQUfq2ZYoUzguihU0vb1W"
+botKeyInfo["MujeresFemBot"]["C_SECRET"]="44SvMoJhVolsaKvu1gyJStTnO7qwCOo95PHMYzsVw3HTCAvbXP"
+botKeyInfo["MujeresFemBot"]["A_TOKEN"]="3754637839-oMtjXQaRm8X1Zh84O0vcgTqys4dNKTu94neEnVj"
+botKeyInfo["MujeresFemBot"]["A_TOKEN_SECRET"]="SMwDSe95015Yk3C3rCB5sOJsdzGSv5PIMn0dEvSZhmBvG"
 
-
+##Consumer Key (API Key) U9BfrQUfq2ZYoUzguihU0vb1W
+#Consumer Secret (API Secret) 44SvMoJhVolsaKvu1gyJStTnO7qwCOo95PHMYzsVw3HTCAvbXP
+#Access Token 3754637839-oMtjXQaRm8X1Zh84O0vcgTqys4dNKTu94neEnVj
+#Access Token Secret SMwDSe95015Yk3C3rCB5sOJsdzGSv5PIMn0dEvSZhmBvG 
 
 
 def authenticateBot(screen_name):
@@ -111,9 +115,11 @@ def get_all_tweets2(screen_name,api):
      
     #initialize a list to hold all the tweepy Tweets
     alltweets = []
+    print "ENTERED FUNCTIONM"
      
     #make initial request for most recent tweets (200 is the maximum allowed count)
     new_tweets = api.user_timeline(screen_name = screen_name,count=200)
+    print "got new tweets"
      
     #save most recent tweets
     alltweets.extend(new_tweets)
@@ -219,10 +225,45 @@ def getTweetsMentioningPerson(screen_name):
 	api,auth=authenticateBot(screen_name)
 	#api = tweepy.API(auth)
 	t=-1
-	max_tweets = 1
+	max_tweets = 200
+	users={}
 	searched_tweets = [status for status in tweepy.Cursor(api.search, q="Mujeres__Fem").items(max_tweets)]
 	for t in searched_tweets:
-		print t.text
+		text=t.text.lower()
+		#print text
+		words=text.split()
+		notFoundUser=True
+		for w in words:
+			w=w.lower()
+			#print w
+			if "mujeres__fem" in w:
+			#print t.text
+				#print t.user.screen_name
+				user=t.user.screen_name
+				users.setdefault(user,[])
+				users[user].append(t.text)
+				notFoundUser=False
+
+				break
+		if notFoundUser:
+			print "Not user:"+text
+
+	for u in users:
+		#print u
+		print u+","+str(users[u])
+	pickle.dump(users, open("repliesMentioning_"+str(screen_name)+".p", "wb"))
+	print len(users)
+
+def readData(screen_name):
+	#pickle.dump(users, open("repliesMentioning_"+str(screen_name)+".p", "wb"))
+	users=pickle.load(open("repliesMentioning_"+str(screen_name)+".p", "rb"))
+	for u in users:
+		print u
+		tweets=users[u]
+		for t in tweets:
+			print t
+
+
 
 	#for tweet in tweepy.Cursor(api.search,q="Mujeres__Fem",since='2015-09-01',until='2015-10-09').items():
 	#	t+=1
@@ -502,12 +543,37 @@ def getAllRepliesFinal(screen_name):
 	#getRepliesBot(screen_name)
 	#getStatsPeopleWhoReply(screen_name)
 
+def getTimlinesReplies(screen_name):
+	users=pickle.load(open("peoplewhoReplyANdMentionBot_"+str(screen_name)+".p", "rb"))
+	api,auth=authenticateBot(screen_name)
+	
+	for u in users:
+		print u
+		get_all_tweets2(u,api)
+
+def getUserDataFlor():
+	usersWithTweets={}
+	for root, dirs, files in os.walk("."):
+		for file in files:
+			if file.endswith(".p"):
+				if "alltweets_" in file:
+					nameFile=str(os.path.join(root, file))
+					userName=nameFile.replace("./alltweets_","")
+					userName=userName.replace(".p","")
+					print userName
+					usersWithTweets.setdefault(userName,[])
+					tweets=pickle.load(open(nameFile, "rb"))
+					for t in tweets:
+						usersWithTweets[userName].append(t)
+	pickle.dump(usersWithTweets, open("usersWithTweetsFlor.p", "wb"))
 
 #screen_name="MujeresFemBot"
-screen_name="Mujeres__Fem"
-
+getUserDataFlor()
+#screen_name="Mujeres__Fem"
+#getTimlinesReplies(screen_name)
+#readData(screen_name)
 #getTweetsMentioningPerson()
-getTweetsMentioningPerson(screen_name)
+#getTweetsMentioningPerson(screen_name)
 #getTweetsMentioningPerson(screen_name,1)
 
 #getAllRepliesFinal(screen_name)
